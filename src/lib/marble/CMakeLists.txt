@@ -131,6 +131,7 @@ set(marblewidget_SRCS
     ViewParams.cpp
     projections/AbstractProjection.cpp
     projections/CylindricalProjection.cpp
+    projections/GnomonicProjection.cpp
     projections/SphericalProjection.cpp
     projections/EquirectProjection.cpp
     projections/MercatorProjection.cpp
@@ -143,6 +144,7 @@ set(marblewidget_SRCS
     ScanlineTextureMapperContext.cpp
     SphericalScanlineTextureMapper.cpp
     EquirectScanlineTextureMapper.cpp
+    GnomonicScanlineTextureMapper.cpp
     MercatorScanlineTextureMapper.cpp
     TileScalingTextureMapper.cpp
     VectorTileModel.cpp

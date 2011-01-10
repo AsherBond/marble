@@ -502,6 +502,13 @@ void MapViewWidget::setProjection( Projection projection )
             d->m_globeViewButton->setChecked(false);
             d->m_mercatorViewAction->setChecked(false);
             break;
+        case Marble::Gnomonic:
+#warning FIXME
+            d->m_globeViewButton->setChecked(true);
+            d->m_mercatorViewButton->setChecked(false);
+            d->m_mercatorViewAction->setChecked(false);
+            d->m_flatViewAction->setChecked(false);
+            break;
         }
     }
 }
