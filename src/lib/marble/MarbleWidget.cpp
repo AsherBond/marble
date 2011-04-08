@@ -22,6 +22,7 @@
 #include <QPaintEvent>
 #include <QRegion>
 #include <QSizePolicy>
+#include <QVBoxLayout>
 #include <QNetworkProxy>
 #include <QMetaMethod>
 
@@ -42,6 +43,7 @@
 #include "MarbleMap.h"
 #include "MarbleModel.h"
 #include "MarblePhysics.h"
+#include "MarbleView.h"
 #include "MarbleWidgetInputHandler.h"
 #include "MarbleWidgetPopupMenu.h"
 #include "Planet.h"
@@ -91,6 +93,7 @@ class MarbleWidgetPrivate
         : m_widget( parent ),
           m_model(),
           m_map( &m_model ),
+          m_view( 0 ),
           m_animationsEnabled( false ),
           m_logzoom( 0 ),
           m_zoomStep( MarbleGlobal::getInstance()->profiles() & MarbleGlobal::SmallScreen ? 60 : 40 ),
@@ -128,18 +131,12 @@ class MarbleWidgetPrivate
       */
     void moveByStep( int stepsRight, int stepsDown, FlyToMode mode );
 
-    /**
-      * @brief Update widget flags and cause a full repaint
-      *
-      * The background of the widget only needs to be redrawn in certain cases. This
-      * method sets the widget flags accordingly and triggers a repaint.
-      */
-    void updateSystemBackgroundAttribute();
-
     MarbleWidget    *const m_widget;
     // The model we are showing.
     MarbleModel     m_model;
     MarbleMap       m_map;
+
+    QWidget         *m_view;
 
     bool m_animationsEnabled;
 
@@ -169,6 +166,14 @@ MarbleWidget::MarbleWidget(QWidget *parent)
       d( new MarbleWidgetPrivate( this ) )
 {
 //    setAttribute( Qt::WA_PaintOnScreen, true );
+    setAttribute( Qt::WA_NoSystemBackground, true ); // full background is always painted by d->m_view
+
+    QVBoxLayout *vlayout = new QVBoxLayout( this );
+    vlayout->setMargin( 0 );
+
+    d->m_view = new MarbleView( &d->m_map, this );
+    vlayout->addWidget( d->m_view );
+
     d->construct();
 }
 
@@ -231,8 +236,6 @@ void MarbleWidgetPrivate::construct()
                        m_widget, SLOT(updateMapTheme()) );
     m_widget->connect( &m_map,   SIGNAL(repaintNeeded(QRegion)),
                        m_widget, SLOT(update()) );
-    m_widget->connect( &m_map,   SIGNAL(visibleLatLonAltBoxChanged(GeoDataLatLonAltBox)),
-                       m_widget, SLOT(updateSystemBackgroundAttribute()) );
 
     m_widget->connect( m_model.fileManager(), SIGNAL(centeredDocument(GeoDataLatLonBox)),
                        m_widget, SLOT(centerOn(GeoDataLatLonBox)) );
@@ -268,14 +271,6 @@ void MarbleWidgetPrivate::moveByStep( int stepsRight, int stepsDown, FlyToMode m
     qreal left = polarity * stepsRight * m_widget->moveStep();
     qreal down = stepsDown * m_widget->moveStep();
     m_widget->rotateBy( left, down, mode );
-}
-
-void MarbleWidgetPrivate::updateSystemBackgroundAttribute()
-{
-    // We only have to repaint the background every time if the earth
-    // doesn't cover the whole image.
-    const bool isOn = m_map.viewport()->mapCoversViewport() && !m_model.mapThemeId().isEmpty();
-    m_widget->setAttribute( Qt::WA_NoSystemBackground, isOn );
 }
 
 // ----------------------------------------------------------------
@@ -805,41 +800,7 @@ void MarbleWidget::paintEvent( QPaintEvent *evt )
     QTime t;
     t.start();
 
-    QPaintDevice *paintDevice = this;
-    QImage image;
-    if (!isEnabled())
-    {
-        // If the globe covers fully the screen then we can use the faster
-        // RGB32 as there are no translucent areas involved.
-        QImage::Format imageFormat = ( d->m_map.viewport()->mapCoversViewport() )
-                                     ? QImage::Format_RGB32
-                                     : QImage::Format_ARGB32_Premultiplied;
-        // Paint to an intermediate image
-        image = QImage( rect().size(), imageFormat );
-        image.fill( Qt::transparent );
-        paintDevice = &image;
-    }
-
-    {
-        // FIXME: Better way to get the GeoPainter
-        // Create a painter that will do the painting.
-        GeoPainter geoPainter( paintDevice, d->m_map.viewport(), d->m_map.mapQuality() );
-
-        d->m_map.paint( geoPainter, evt->rect() );
-    }
-
-    if ( !isEnabled() )
-    {
-        // Draw a grayscale version of the intermediate image
-        QRgb* pixel = reinterpret_cast<QRgb*>( image.scanLine( 0 ));
-        for (int i=0; i<image.width()*image.height(); ++i, ++pixel) {
-            int gray = qGray( *pixel );
-            *pixel = qRgb( gray, gray, gray );
-        }
-
-        QPainter widgetPainter( this );
-        widgetPainter.drawImage( rect(), image );
-    }
+    QWidget::paintEvent( evt );
 
     if ( d->m_showFrameRate )
     {
