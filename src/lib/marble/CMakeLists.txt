@@ -74,6 +74,7 @@ set(marblewidget_SRCS
     ${geodata_SRCS}
     ${graphicsview_SRCS}
     ${layers_SRCS}
+    triangulate.cpp
     blendings/Blending.cpp
     blendings/BlendingAlgorithms.cpp
     blendings/BlendingFactory.cpp
