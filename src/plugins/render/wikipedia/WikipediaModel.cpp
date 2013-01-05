@@ -66,8 +66,9 @@ void WikipediaModel::getAdditionalItems( const GeoDataLatLonBox& box,
         return;
     }
         
-    QUrl geonamesUrl( "http://ws.geonames.org/wikipediaBoundingBox" );
+    QUrl geonamesUrl( "http://www.geonames.org/servlet/geonames" );
 #if QT_VERSION < 0x050000
+    geonamesUrl.addQueryItem( "srv", "121" );
     geonamesUrl.addQueryItem( "north", QString::number( box.north( GeoDataCoordinates::Degree ) ) );
     geonamesUrl.addQueryItem( "south", QString::number( box.south( GeoDataCoordinates::Degree ) ) );
     geonamesUrl.addQueryItem( "east", QString::number( box.east( GeoDataCoordinates::Degree ) ) );
@@ -77,6 +78,7 @@ void WikipediaModel::getAdditionalItems( const GeoDataLatLonBox& box,
     geonamesUrl.addQueryItem( "username", "marble" );
 #else
     QUrlQuery urlQuery;
+    urlQuery.addQueryItem( "srv", "121" );
     urlQuery.addQueryItem( "north", QString::number( box.north( GeoDataCoordinates::Degree ) ) );
     urlQuery.addQueryItem( "south", QString::number( box.south( GeoDataCoordinates::Degree ) ) );
     urlQuery.addQueryItem( "east", QString::number( box.east( GeoDataCoordinates::Degree ) ) );
