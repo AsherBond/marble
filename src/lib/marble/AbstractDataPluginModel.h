@@ -26,6 +26,7 @@ class QAbstractItemModel;
 namespace Marble
 {
     
+class GeoPainter;
 class AbstractDataPluginModelPrivate;
 class AbstractDataPluginItem;
 class GeoDataLatLonBox;
@@ -64,7 +65,7 @@ class MARBLE_EXPORT AbstractDataPluginModel : public QObject
      * @return The list of item with most important item first.
      */
     QList<AbstractDataPluginItem*> items( const ViewportParams *viewport,
-                                          qint32 number = 10 );
+                                          qint32 number, GeoPainter *painter );
     
     /**
      * @brief Get all items that contain the given point

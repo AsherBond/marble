@@ -161,7 +161,7 @@ void AbstractDataPluginModelTest::addItemToList()
 
     const bool visible = initialized && ( m_marbleModel.planetId() == planetId );
 
-    QCOMPARE( static_cast<bool>( model.items( &fullViewport, 1 ).contains( item ) ), visible );
+    QCOMPARE( static_cast<bool>( model.items( &fullViewport, 1, 0 ).contains( item ) ), visible );
 }
 
 void AbstractDataPluginModelTest::addItemToList_keepExisting_data()
@@ -239,7 +239,7 @@ void AbstractDataPluginModelTest::setFavoriteItemsOnly()
 
     const bool visible = !favoriteItemsOnly || itemIsFavorite;
 
-    QCOMPARE( static_cast<bool>( model.items( &fullViewport, 1 ).contains( item ) ), visible );
+    QCOMPARE( static_cast<bool>( model.items( &fullViewport, 1, 0 ).contains( item ) ), visible );
 }
 
 QTEST_MAIN( AbstractDataPluginModelTest )
