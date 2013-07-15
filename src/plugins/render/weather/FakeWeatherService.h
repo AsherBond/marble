@@ -25,9 +25,10 @@ class FakeWeatherService : public AbstractWeatherService
     ~FakeWeatherService();
     
  public Q_SLOTS:
-    void getAdditionalItems( const GeoDataLatLonAltBox& box,
-                             qint32 number = 10 );
-    virtual void getItem( const QString &id );
+    void getAdditionalItems( const GeoDataLatLonBox& box,
+                             qint32 number,
+                             int zoomLevel );
+    void getItem( const QString &id, int zoomLevel );
 };
 
 } // namespace Marble

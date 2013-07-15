@@ -28,14 +28,15 @@ class GeoNamesWeatherService : public AbstractWeatherService
     ~GeoNamesWeatherService();
 
  public Q_SLOTS:
-    void getAdditionalItems( const GeoDataLatLonAltBox& box,
-                             qint32 number = 10 );
-    void getItem( const QString &id );
-    void parseFile( const QByteArray& file );
+    void getAdditionalItems( const GeoDataLatLonBox& box,
+                             qint32 number,
+                             int zoomLevel );
+    void getItem( const QString &id, int zoomLevel );
+    void parseFile( const QByteArray& file, int zoomLevel );
 
  private:
-    AbstractDataPluginItem* parse( const QScriptValue &value );
-    static void setupHashes();
+    AbstractDataPluginItem* parse( const QScriptValue &value, int zoomLevel );
+    void setupHashes();
 
     static QHash<QString, WeatherData::WeatherCondition> dayConditions;
     static QVector<WeatherData::WindDirection> windDirections;

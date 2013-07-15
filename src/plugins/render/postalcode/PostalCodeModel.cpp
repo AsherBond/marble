@@ -43,8 +43,9 @@ PostalCodeModel::PostalCodeModel( const MarbleModel *marbleModel, QObject *paren
 PostalCodeModel::~PostalCodeModel() {
 }
 
-void PostalCodeModel::getAdditionalItems( const GeoDataLatLonAltBox& box,
-                                          qint32 number )
+void PostalCodeModel::getAdditionalItems( const GeoDataLatLonBox& box,
+                                          qint32 number,
+                                          const TileId& tileId )
 {
     if( marbleModel()->planetId() != "earth" ) {
         return;
@@ -71,10 +72,10 @@ void PostalCodeModel::getAdditionalItems( const GeoDataLatLonAltBox& box,
     geonamesUrl.setQuery( urlQuery );
 #endif
 
-    downloadDescriptionFile( QUrl( geonamesUrl ) );
+    downloadDescriptionFile( QUrl( geonamesUrl ), tileId );
 }
 
-void PostalCodeModel::parseFile( const QByteArray& file )
+void PostalCodeModel::parseFile( const QByteArray& file, int zoomLevel )
 {
     QScriptValue data;
     QScriptEngine engine;
@@ -118,7 +119,7 @@ void PostalCodeModel::parseFile( const QByteArray& file )
 
                 if( !itemExists( id ) ) {
                     // If it does not exist, create it
-                    GeoDataCoordinates coordinates( longitude, latitude, 0.0, GeoDataCoordinates::Degree );
+                    GeoDataCoordinates coordinates( longitude, latitude, 0.0, GeoDataCoordinates::Degree, zoomLevel );
 
                     PostalCodeItem *item = new PostalCodeItem( this );
                     item->setId( id );

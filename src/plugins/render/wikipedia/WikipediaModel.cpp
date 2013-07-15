@@ -57,8 +57,9 @@ void WikipediaModel::setShowThumbnail( bool show )
     m_showThumbnail = show;
 }
 
-void WikipediaModel::getAdditionalItems( const GeoDataLatLonAltBox& box,
-                                         qint32 number )
+void WikipediaModel::getAdditionalItems( const GeoDataLatLonBox& box,
+                                         qint32 number,
+                                         const TileId& tileId )
 {
     // Geonames only supports wikipedia articles for earth
     if ( marbleModel()->planetId() != "earth" ) {
@@ -86,13 +87,13 @@ void WikipediaModel::getAdditionalItems( const GeoDataLatLonAltBox& box,
     geonamesUrl.setQuery( urlQuery );
 #endif
 
-    downloadDescriptionFile( geonamesUrl );
+    downloadDescriptionFile( geonamesUrl, tileId );
 }
 
-void WikipediaModel::parseFile( const QByteArray& file )
+void WikipediaModel::parseFile( const QByteArray& file, int zoomLevel )
 {
     QList<WikipediaItem*> list;
-    GeonamesParser parser( m_marbleWidget, &list, this );
+    GeonamesParser parser( m_marbleWidget, zoomLevel, &list, this );
     
     parser.read( file );
     

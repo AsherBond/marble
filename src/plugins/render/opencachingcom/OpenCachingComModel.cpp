@@ -13,7 +13,7 @@
 
 #include "MarbleGlobal.h"
 #include "MarbleModel.h"
-#include "GeoDataCoordinates.h"
+#include "GeoDataLatLonBox.h"
 #include "MarbleDebug.h"
 
 #include <QDebug>
@@ -53,14 +53,9 @@ OpenCachingComModel::~OpenCachingComModel()
 {
 }
 
-void OpenCachingComModel::getAdditionalItems( const GeoDataLatLonAltBox& box, qint32 number )
+void OpenCachingComModel::getAdditionalItems( const GeoDataLatLonBox& box, qint32 number, const TileId& tileId )
 {
     if( marbleModel()->planetId() != "earth" )
-    {
-        return;
-    }
-
-    if ( m_previousbox.contains( box ) )
     {
         return;
     }
@@ -71,24 +66,14 @@ void OpenCachingComModel::getAdditionalItems( const GeoDataLatLonAltBox& box, qi
         .arg( box.west(GeoDataCoordinates::Degree ) )
         .arg( box.north(GeoDataCoordinates::Degree ) )
         .arg( box.east(GeoDataCoordinates::Degree ) );
-    if(!m_previousbox.isNull())
-    {
-        url += QString("&exclude_bbox=%1,%2,%3,%4")
-            .arg( m_previousbox.south( GeoDataCoordinates::Degree ) )
-            .arg( m_previousbox.west(GeoDataCoordinates::Degree ) )
-            .arg( m_previousbox.north(GeoDataCoordinates::Degree ) )
-            .arg( m_previousbox.east(GeoDataCoordinates::Degree ) );
-    }
     url += "&limit=" + QString::number( number );
     // TODO Limit to user set tags/types/difficulty - when there is a config dialog...
 
-    m_previousbox = box;
-
 //     qDebug()<<"Fetching more caches: "<<url;
-    downloadDescriptionFile( QUrl( url ) );
+    downloadDescriptionFile( QUrl( url ), tileId );
 }
 
-void OpenCachingComModel::parseFile( const QByteArray& file )
+void OpenCachingComModel::parseFile( const QByteArray& file, int zoomLevel )
 {
     QScriptEngine engine;
 
@@ -103,7 +88,9 @@ void OpenCachingComModel::parseFile( const QByteArray& file )
         QVariantMap map = caches.takeFirst().toMap();
         if ( !findItem( map["oxcode"].toString() ) )
         {
-            items << new OpenCachingComItem( map, this );
+            OpenCachingComItem *item = new OpenCachingComItem( map, this );
+            item->setZoomLevel( zoomLevel );
+            items << item;
         }
     }
     addItemsToList(items);

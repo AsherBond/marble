@@ -55,7 +55,7 @@ void EarthquakeModel::setEndDate( const QDateTime& endDate )
     m_endDate = endDate;
 }
 
-void EarthquakeModel::getAdditionalItems( const GeoDataLatLonAltBox& box, qint32 number )
+void EarthquakeModel::getAdditionalItems( const GeoDataLatLonBox& box, qint32 number, const TileId& tileId )
 {
     if( marbleModel()->planetId() != "earth" ) {
         return;
@@ -70,10 +70,10 @@ void EarthquakeModel::getAdditionalItems( const GeoDataLatLonAltBox& box, qint32
     geonamesUrl += "&maxRows=" + QString::number( number );
     geonamesUrl += "&username=marble";
     geonamesUrl += "&formatted=true";
-    downloadDescriptionFile( QUrl( geonamesUrl ) );
+    downloadDescriptionFile( QUrl( geonamesUrl ), tileId );
 }
 
-void EarthquakeModel::parseFile( const QByteArray& file )
+void EarthquakeModel::parseFile( const QByteArray& file, int zoomLevel )
 {
     QScriptValue data;
     QScriptEngine engine;
@@ -100,7 +100,7 @@ void EarthquakeModel::parseFile( const QByteArray& file )
             if( date <= m_endDate && date >= m_startDate && magnitude >= m_minMagnitude ) {
                 if( !itemExists( eqid ) ) {
                     // If it does not exists, create it
-                    GeoDataCoordinates coordinates( longitude, latitude, 0.0, GeoDataCoordinates::Degree );
+                    GeoDataCoordinates coordinates( longitude, latitude, 0.0, GeoDataCoordinates::Degree, zoomLevel );
                     EarthquakeItem *item = new EarthquakeItem( this );
                     item->setId( eqid );
                     item->setCoordinate( coordinates );

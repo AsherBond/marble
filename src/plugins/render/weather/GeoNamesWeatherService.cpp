@@ -43,8 +43,9 @@ GeoNamesWeatherService::~GeoNamesWeatherService()
 {
 }
 
-void GeoNamesWeatherService::getAdditionalItems( const GeoDataLatLonAltBox& box,
-                                            qint32 number )
+void GeoNamesWeatherService::getAdditionalItems( const GeoDataLatLonBox& box,
+                                                 qint32 number,
+                                                 int zoomLevel )
 {
     if( marbleModel()->planetId() != "earth" ) {
         return;
@@ -69,10 +70,10 @@ void GeoNamesWeatherService::getAdditionalItems( const GeoDataLatLonAltBox& box,
     geonamesUrl.setQuery( urlQuery );
 #endif
 
-    emit downloadDescriptionFileRequested( geonamesUrl );
+    emit downloadDescriptionFileRequested( geonamesUrl, zoomLevel );
 }
 
-void GeoNamesWeatherService::getItem( const QString &id )
+void GeoNamesWeatherService::getItem( const QString &id, int zoomLevel )
 {
     if( marbleModel()->planetId() != "earth" ) {
         return;
@@ -89,11 +90,11 @@ void GeoNamesWeatherService::getItem( const QString &id )
         urlQuery.addQueryItem( "username", "marble" );
         geonamesUrl.setQuery( urlQuery );
 #endif
-        emit downloadDescriptionFileRequested( geonamesUrl );
+        emit downloadDescriptionFileRequested( geonamesUrl, zoomLevel );
     }
 }
 
-void GeoNamesWeatherService::parseFile( const QByteArray& file )
+void GeoNamesWeatherService::parseFile( const QByteArray& file, int zoomLevel )
 {
     QScriptValue data;
     QScriptEngine engine;
@@ -108,13 +109,13 @@ void GeoNamesWeatherService::parseFile( const QByteArray& file )
         // Add items to the list
         while ( iterator.hasNext() ) {
             iterator.next();
-            AbstractDataPluginItem* item = parse( iterator.value() );
+            AbstractDataPluginItem* item = parse( iterator.value(), zoomLevel );
             if ( item ) {
                 items << item;
             }
         }
     } else {
-        AbstractDataPluginItem* item = parse( data.property( "weatherObservation" ) );
+        AbstractDataPluginItem* item = parse( data.property( "weatherObservation" ), zoomLevel );
         if ( item ) {
             items << item;
         }
@@ -123,7 +124,7 @@ void GeoNamesWeatherService::parseFile( const QByteArray& file )
     emit createdItems( items );
 }
 
-AbstractDataPluginItem *GeoNamesWeatherService::parse( const QScriptValue &value )
+AbstractDataPluginItem *GeoNamesWeatherService::parse( const QScriptValue &value, int zoomLevel )
 {
     QString condition = value.property( "weatherCondition" ).toString();
     QString clouds = value.property( "clouds" ).toString();
@@ -187,7 +188,7 @@ AbstractDataPluginItem *GeoNamesWeatherService::parse( const QScriptValue &value
         // ID
         id = "geonames_" + id;
 
-        GeoDataCoordinates coordinates( longitude, latitude, 0.0, GeoDataCoordinates::Degree );
+        GeoDataCoordinates coordinates( longitude, latitude, 0.0, GeoDataCoordinates::Degree, zoomLevel );
         GeoNamesWeatherItem *item = new GeoNamesWeatherItem( this );
         item->setMarbleWidget( marbleWidget() );
         item->setId( id );

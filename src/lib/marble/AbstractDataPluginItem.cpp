@@ -32,15 +32,13 @@ class AbstractDataPluginItemPrivate
     QString m_toolTip;
     bool m_favorite;
     bool m_sticky;
-    qreal m_addedAngularResolution;
 
     AbstractDataPluginItemPrivate();
 };
 
 AbstractDataPluginItemPrivate::AbstractDataPluginItemPrivate()
     : m_favorite( false ),
-      m_sticky( false ),
-      m_addedAngularResolution( 0 )
+      m_sticky( false )
 {
     // nothing to do
 }
@@ -119,14 +117,16 @@ void AbstractDataPluginItem::toggleFavorite()
     setFavorite( !isFavorite() );
 }
 
-qreal AbstractDataPluginItem::addedAngularResolution() const
+int AbstractDataPluginItem::zoomLevel() const
 {
-    return d->m_addedAngularResolution;
+    return coordinate().detail();
 }
 
-void AbstractDataPluginItem::setAddedAngularResolution( qreal resolution )
+void AbstractDataPluginItem::setZoomLevel( int zoomLevel )
 {
-    d->m_addedAngularResolution = resolution;
+    GeoDataCoordinates coordinates = coordinate();
+    coordinates.setDetail( zoomLevel );
+    setCoordinate( coordinates );
 }
 
 void AbstractDataPluginItem::setSettings( const QHash<QString, QVariant>& settings )

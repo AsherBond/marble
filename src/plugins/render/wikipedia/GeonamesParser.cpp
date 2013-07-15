@@ -22,9 +22,11 @@
 using namespace Marble;
 
 GeonamesParser::GeonamesParser( MarbleWidget * widget,
+                                int zoomLevel,
                                 QList<WikipediaItem *> *list,
                                 QObject *parent )
     : m_marbleWidget( widget ),
+      m_zoomLevel( zoomLevel ),
       m_list( list ),
       m_parent( parent )
 {
@@ -88,7 +90,7 @@ void GeonamesParser::readEntry()
     Q_ASSERT( isStartElement()
               && name() == "entry" );
               
-    WikipediaItem *item = new WikipediaItem( m_marbleWidget, m_parent );
+    WikipediaItem *item = new WikipediaItem( m_marbleWidget, m_zoomLevel, m_parent );
     m_list->append( item );
     
     while ( !atEnd() ) {

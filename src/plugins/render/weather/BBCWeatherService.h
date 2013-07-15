@@ -34,9 +34,10 @@ class BBCWeatherService : public AbstractWeatherService
     void setFavoriteItems( const QStringList& favorite );
     
  public Q_SLOTS:
-    void getAdditionalItems( const GeoDataLatLonAltBox& box,
-                             qint32 number = 10 );
-    virtual void getItem( const QString &id );
+    void getAdditionalItems( const GeoDataLatLonBox& box,
+                             qint32 number,
+                             int zoomLevel );
+    void getItem( const QString &id, int zoomLevel );
 
  private Q_SLOTS:
     void fetchStationList();

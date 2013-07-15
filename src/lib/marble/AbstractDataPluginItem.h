@@ -63,8 +63,8 @@ class MARBLE_EXPORT AbstractDataPluginItem : public QObject, public BillboardGra
       * Returning the angular resolution of the viewport when the item was added to it the last
       * time.
       */
-    qreal addedAngularResolution() const;
-    void setAddedAngularResolution( qreal resolution );
+    int zoomLevel() const;
+    void setZoomLevel( int zoomLevel );
 
     /**
      * @brief Set the settings of the item.

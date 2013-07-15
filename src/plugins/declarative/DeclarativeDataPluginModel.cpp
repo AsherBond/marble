@@ -12,7 +12,7 @@
 
 #include "DeclarativeDataPluginModel.h"
 
-#include "GeoDataLatLonAltBox.h"
+#include "GeoDataLatLonBox.h"
 
 using namespace Marble;
 
@@ -27,10 +27,10 @@ DeclarativeDataPluginModel::~DeclarativeDataPluginModel()
     // nothing to do
 }
 
-void DeclarativeDataPluginModel::getAdditionalItems( const GeoDataLatLonAltBox& box, qint32 )
+void DeclarativeDataPluginModel::getAdditionalItems( const GeoDataLatLonBox& box, qint32, const TileId& tileId )
 {
     Marble::GeoDataCoordinates::Unit const degree = Marble::GeoDataCoordinates::Degree;
-    emit dataRequest( box.north( degree ), box.south( degree ), box.east( degree ), box.west( degree ) );
+    emit dataRequest( box.north( degree ), box.south( degree ), box.east( degree ), box.west( degree ), tileId );
 }
 
 #include "DeclarativeDataPluginModel.moc"

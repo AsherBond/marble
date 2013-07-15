@@ -89,7 +89,7 @@ void PhotoPluginItem::addDownloadedFile( const QString& url, const QString& type
             return;
         }
         
-        GeoDataCoordinates coordinates;
+        GeoDataCoordinates coordinates = coordinate();
         CoordinatesParser parser( &coordinates );
         
         if( parser.read( &file ) ) {

@@ -37,7 +37,7 @@ const QRect wikiIconRect( 0, 0, 22, 19 );
 const QSize miniWikiIconSize( 22, 19 );
 const int miniWikiIconBorder = 3;
 
-WikipediaItem::WikipediaItem( MarbleWidget* widget, QObject *parent )
+WikipediaItem::WikipediaItem( MarbleWidget* widget, int zoomLevel, QObject *parent )
     : AbstractDataPluginItem( parent ),
       m_marbleWidget( widget ),
       m_rank( 0.0 ),
@@ -48,6 +48,7 @@ WikipediaItem::WikipediaItem( MarbleWidget* widget, QObject *parent )
     m_action = new QAction( this );
     connect( m_action, SIGNAL(triggered()), this, SLOT(openBrowser()) );
     setCacheMode( ItemCoordinateCache );
+    setZoomLevel( zoomLevel );
 }
 
 WikipediaItem::~WikipediaItem()
@@ -57,12 +58,13 @@ WikipediaItem::~WikipediaItem()
 
 QString WikipediaItem::name() const
 {
-    return id();
+    return m_name;
 }
 
 void WikipediaItem::setName( const QString& name )
 {
-    setId( name );
+    m_name = name;
+    setId( name + QString::number( coordinate().detail() ) );
     updateToolTip();
 }
 

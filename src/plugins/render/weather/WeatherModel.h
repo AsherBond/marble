@@ -14,7 +14,7 @@
 #include "AbstractDataPluginModel.h"
 
 #include "WeatherData.h"
-#include "GeoDataLatLonAltBox.h"
+#include "GeoDataLatLonBox.h"
 #include "MarbleWidget.h"
 
 #include <QStringList>
@@ -26,7 +26,7 @@ namespace Marble
 {
 
 class AbstractWeatherService;
-class GeoDataLatLonAltBox;
+class GeoDataLatLonBox;
 class MarbleModel;
     
 class WeatherModel : public AbstractDataPluginModel
@@ -50,21 +50,23 @@ class WeatherModel : public AbstractDataPluginModel
      **/
     void downloadItemData( const QUrl& url, const QString& type, AbstractDataPluginItem *item );
     
-    void downloadDescriptionFileRequested( const QUrl& url );
+    void downloadDescriptionFileRequested( const QUrl& url, const TileId& tileId );
 
     void setMarbleWidget(MarbleWidget *widget);
 
  Q_SIGNALS:
-    void additionalItemsRequested( const GeoDataLatLonAltBox &,
-                                   qint32 number );
+    void additionalItemsRequested( const GeoDataLatLonBox &,
+                                   qint32 number,
+                                   const TileId& tileId );
     void favoriteItemChanged( const QString& id, bool isFavorite );
-    void parseFileRequested( const QByteArray& file );
+    void parseFileRequested( const QByteArray& file, int zoomLevel );
 
  protected:
-    void getAdditionalItems( const GeoDataLatLonAltBox& box,
-                             qint32 number = 10 );
-    virtual void getItem( const QString &id );
-    void parseFile( const QByteArray& file );
+    void getAdditionalItems( const GeoDataLatLonBox& box,
+                             qint32 number,
+                             const TileId& tileId );
+    void getItem( const QString &id, int zoomLevel );
+    void parseFile( const QByteArray& file, int zoomLevel );
 
  private:
     void addService( AbstractWeatherService *service );

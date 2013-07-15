@@ -28,9 +28,10 @@ namespace Marble
     
 class AbstractDataPluginModelPrivate;
 class AbstractDataPluginItem;
-class GeoDataLatLonAltBox;
+class GeoDataLatLonBox;
 class MarbleModel;
 class ViewportParams;
+class TileId;
 
 /**
  * @short An abstract data model (not based on QAbstractModel) for a AbstractDataPlugin.
@@ -120,21 +121,22 @@ public Q_SLOTS:
      * downloading the corresponding file.
      * This method has to be implemented in a subclass.
      **/
-    virtual void getAdditionalItems( const GeoDataLatLonAltBox& box,
-                                     qint32 number = 10 ) = 0;
+    virtual void getAdditionalItems( const GeoDataLatLonBox& box,
+                                     qint32 number,
+                                     const TileId& tileId ) = 0;
 
     /**
      * @brief Retrieve data for a specific item
      * @param id Item id of the item to retrieve
      */
-    virtual void getItem( const QString &id );
+    virtual void getItem( const QString &id, int zoomLevel );
        
     /**
      * Parse the @p file and generate items. The items will be added to the list or the method
      * starts additionally needed downloads.
      * This method has to be implemented in a subclass.
      **/
-    virtual void parseFile( const QByteArray& file );
+    virtual void parseFile( const QByteArray& file, int zoomLevel );
         
     /**
      * Downloads the file from @p url. @p item -> addDownloadedFile() will be called when the
@@ -156,7 +158,7 @@ public Q_SLOTS:
     /**
      * Download the description file from the @p url.
      */
-    void downloadDescriptionFile( const QUrl& url );
+    void downloadDescriptionFile( const QUrl& url, const TileId& tileId );
 
     /**
      * Generates the filename relative to the download path from @p id and @p type
@@ -181,11 +183,6 @@ public Q_SLOTS:
     void registerItemProperties( const QMetaObject& item );
     
  private Q_SLOTS:
-    /**
-     * @brief Get new items with getAdditionalItems if it is reasonable.
-     */
-    void handleChangedViewport();
-    
     /**
      * @brief This method will assign downloaded files to the corresponding items
      * @param relativeUrlString The string containing the relative (to the downloader path)

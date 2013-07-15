@@ -44,7 +44,10 @@ OpenCachingComItem::OpenCachingComItem( QVariantMap cache, OpenCachingComModel *
      , m_action( new QAction( this ) )
 {
     setId( cache["oxcode"].toString() );
-    setCoordinate( GeoDataCoordinates( cache["location"].toMap()["lon"].toReal(), cache["location"].toMap()["lat"].toReal(), 0.0, GeoDataCoordinates::Degree ) );
+    GeoDataCoordinates coordinates = coordinate();
+    coordinates.setLongitude( cache["location"].toMap()["lon"].toReal(), GeoDataCoordinates::Degree );
+    coordinates.setLatitude( cache["location"].toMap()["lat"].toReal(), GeoDataCoordinates::Degree );
+    setCoordinate( coordinates );
     setTarget( "earth" );
 
     // Opencaching.Com does (in effect) this, so as do we..

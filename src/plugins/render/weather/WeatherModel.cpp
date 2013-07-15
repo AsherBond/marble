@@ -90,27 +90,27 @@ void WeatherModel::downloadItemData( const QUrl& url,
     }
 }
 
-void WeatherModel::getAdditionalItems( const GeoDataLatLonAltBox& box,
-                               qint32 number )
+void WeatherModel::getAdditionalItems( const GeoDataLatLonBox& box,
+                               qint32 number, const TileId& tileId )
 {
-    emit additionalItemsRequested( box, number );
+    emit additionalItemsRequested( box, number, tileId );
 }
 
-void WeatherModel::getItem( const QString &id )
+void WeatherModel::getItem( const QString &id, int zoomLevel )
 {
     foreach( AbstractWeatherService* service, m_services ) {
-        service->getItem( id );
+        service->getItem( id, zoomLevel );
     }
 }
 
-void WeatherModel::parseFile( const QByteArray& file )
+void WeatherModel::parseFile( const QByteArray& file, int zoomLevel )
 {
-    emit parseFileRequested( file );
+    emit parseFileRequested( file, zoomLevel );
 }
 
-void WeatherModel::downloadDescriptionFileRequested( const QUrl& url )
+void WeatherModel::downloadDescriptionFileRequested( const QUrl& url, const TileId& tileId )
 {
-    downloadDescriptionFile( url );
+    downloadDescriptionFile( url, tileId );
 }
 
 void WeatherModel::setMarbleWidget(MarbleWidget *widget)
@@ -128,13 +128,13 @@ void WeatherModel::addService( AbstractWeatherService *service )
              this, SLOT(addItemsToList(QList<AbstractDataPluginItem*>)) );
     connect( service, SIGNAL(requestedDownload(QUrl,QString,AbstractDataPluginItem*)),
              this, SLOT(downloadItemData(QUrl,QString,AbstractDataPluginItem*)) );
-    connect( service, SIGNAL(downloadDescriptionFileRequested(QUrl)),
-             this, SLOT(downloadDescriptionFileRequested(QUrl)) );
+    connect( service, SIGNAL(downloadDescriptionFileRequested(QUrl,TileId)),
+             this, SLOT(downloadDescriptionFileRequested(QUrl,TileId)) );
 
-    connect( this, SIGNAL(additionalItemsRequested(GeoDataLatLonAltBox,qint32)),
-             service, SLOT(getAdditionalItems(GeoDataLatLonAltBox,qint32)) );
-    connect( this, SIGNAL(parseFileRequested(QByteArray)),
-             service, SLOT(parseFile(QByteArray)) );
+    connect( this, SIGNAL(additionalItemsRequested(GeoDataLatLonBox,qint32,TileId)),
+             service, SLOT(getAdditionalItems(GeoDataLatLonBox,qint32,TileId)) );
+    connect( this, SIGNAL(parseFileRequested(QByteArray,int)),
+             service, SLOT(parseFile(QByteArray,int)) );
 
     m_services.append( service );
 }

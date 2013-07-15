@@ -14,7 +14,7 @@
 // Marble
 #include "FakeWeatherItem.h"
 #include "GeoDataCoordinates.h"
-#include "GeoDataLatLonAltBox.h"
+#include "GeoDataLatLonBox.h"
 #include "WeatherData.h"
 #include "WeatherModel.h"
 
@@ -29,8 +29,9 @@ FakeWeatherService::~FakeWeatherService()
 {
 }
     
-void FakeWeatherService::getAdditionalItems( const GeoDataLatLonAltBox& box,
-                         qint32 number )
+void FakeWeatherService::getAdditionalItems( const GeoDataLatLonBox& box,
+                                             qint32 number,
+                                             int zoomLevel )
 {
     Q_UNUSED( box );
     Q_UNUSED( number );
@@ -38,7 +39,7 @@ void FakeWeatherService::getAdditionalItems( const GeoDataLatLonAltBox& box,
     FakeWeatherItem *item = new FakeWeatherItem( this );
     item->setStationName( "Fake" );
     item->setPriority( 0 );
-    item->setCoordinate( GeoDataCoordinates( 1, 1 ) );
+    item->setCoordinate( GeoDataCoordinates( 1, 1, 0, GeoDataCoordinates::Radian, zoomLevel ) );
     item->setTarget( "earth" );
     item->setId( "fake1" );
     
@@ -50,9 +51,9 @@ void FakeWeatherService::getAdditionalItems( const GeoDataLatLonAltBox& box,
     emit createdItems( QList<AbstractDataPluginItem*>() << item );
 }
 
-void FakeWeatherService::getItem( const QString & )
+void FakeWeatherService::getItem( const QString &, int zoomLevel )
 {
-    getAdditionalItems( GeoDataLatLonAltBox(), 1 );
+    getAdditionalItems( GeoDataLatLonBox(), 1, zoomLevel );
 }
 
 #include "FakeWeatherService.moc"

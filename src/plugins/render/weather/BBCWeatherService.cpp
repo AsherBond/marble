@@ -57,8 +57,9 @@ void BBCWeatherService::setFavoriteItems( const QStringList& favorite )
     }
 }
 
-void BBCWeatherService::getAdditionalItems( const GeoDataLatLonAltBox& box,
-                                            qint32 number )
+void BBCWeatherService::getAdditionalItems( const GeoDataLatLonBox& box,
+                                            qint32 number,
+                                            int zoomLevel )
 {
     if ( !m_parsingStarted ) {
         setupList();
@@ -67,7 +68,7 @@ void BBCWeatherService::getAdditionalItems( const GeoDataLatLonAltBox& box,
     m_itemGetter->setSchedule( box, number );
 }
 
-void BBCWeatherService::getItem( const QString &id )
+void BBCWeatherService::getItem( const QString &id, int zoomLevel )
 {
     if ( id.startsWith( QLatin1String( "bbc" ) ) ) {
         BBCStation const station = m_itemGetter->station( id );

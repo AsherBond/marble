@@ -37,7 +37,7 @@ FoursquareModel::~FoursquareModel()
 {
 }
 
-void FoursquareModel::getAdditionalItems( const GeoDataLatLonAltBox& box, qint32 number )
+void FoursquareModel::getAdditionalItems( const GeoDataLatLonBox& box, qint32 number, const TileId& tileId )
 {
     if( marbleModel()->planetId() != "earth" ) {
         return;
@@ -66,10 +66,10 @@ void FoursquareModel::getAdditionalItems( const GeoDataLatLonAltBox& box, qint32
     apiUrl += "&client_id=" + clientId;
     apiUrl += "&client_secret=" + clientSecret;
     apiUrl += "&v=20120601";
-    downloadDescriptionFile( QUrl( apiUrl ) );
+    downloadDescriptionFile( QUrl( apiUrl ), tileId );
 }
 
-void FoursquareModel::parseFile( const QByteArray& file )
+void FoursquareModel::parseFile( const QByteArray& file, int zoomLevel )
 {
     QScriptValue data;
     QScriptEngine engine;
@@ -108,7 +108,7 @@ void FoursquareModel::parseFile( const QByteArray& file )
             }
 
             if( !itemExists( id ) ) {
-                GeoDataCoordinates coordinates( longitude, latitude, 0.0, GeoDataCoordinates::Degree );
+                GeoDataCoordinates coordinates( longitude, latitude, 0.0, GeoDataCoordinates::Degree, zoomLevel );
                 FoursquareItem *item = new FoursquareItem( this );
                 item->setId( id );
                 item->setCoordinate( coordinates );

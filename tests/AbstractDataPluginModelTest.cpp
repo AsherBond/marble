@@ -50,10 +50,11 @@ public:
     {}
 
 protected:
-    void getAdditionalItems(const GeoDataLatLonAltBox &box, qint32 number)
+    void getAdditionalItems(const GeoDataLatLonBox &box, qint32 number, const TileId &tileId)
     {
         Q_UNUSED( box )
         Q_UNUSED( number )
+        Q_UNUSED( tileId )
     }
 };
 
