@@ -101,13 +101,11 @@ void TourPlayback::showBalloon( GeoDataPlacemark* placemark )
     GeoDataPoint* point = static_cast<GeoDataPoint*>( placemark->geometry() );
     d->m_widget->popupLayer()->setCoordinates( point->coordinates(), Qt::AlignRight | Qt::AlignVCenter );
     d->m_widget->popupLayer()->setContent( placemark->description() );
-    d->m_widget->popupLayer()->setVisible( true );
     d->m_widget->popupLayer()->setSize( QSizeF( 480, 500 ) );
 }
 
 void TourPlayback::hideBalloon()
 {
-    d->m_widget->popupLayer()->setVisible( false );
 }
 
 bool TourPlayback::isPlaying() const
