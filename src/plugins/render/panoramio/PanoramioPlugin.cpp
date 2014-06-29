@@ -10,13 +10,19 @@
 
 // Self
 #include "PanoramioPlugin.h"
-
 #include "PanoramioModel.h"
+#include "ui_ConfigWidget.h"
+
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 using namespace Marble;
 
 PanoramioPlugin::PanoramioPlugin( const MarbleModel *marbleModel ) :
-    AbstractDataPlugin( marbleModel )
+    AbstractDataPlugin( marbleModel ),
+    m_configDialog( 0 ),
+    m_uiConfigWidget( 0 )
 {
 }
 
@@ -28,7 +34,6 @@ QString Marble::PanoramioPlugin::nameId() const
 void PanoramioPlugin::initialize()
 {
     setModel( new PanoramioModel( marbleModel(), this ) );
-    setNumberOfItems( numberOfImagesPerFetch );
 }
 
 QString PanoramioPlugin::name() const
@@ -40,19 +45,36 @@ QString PanoramioPlugin::guiString() const
 {
     return tr( "&Panoramio" );
 }
-   
+
 QString PanoramioPlugin::description() const
 {
     return tr( "Automatically downloads images from around the world in preference to their popularity" );
 }
-    
+
 QIcon PanoramioPlugin::icon() const
 {
     return QIcon();
 }
 
+QHash<QString, QVariant> PanoramioPlugin::settings() const
+{
+    QHash<QString, QVariant> settings = AbstractDataPlugin::settings();
 
-QString Marble::PanoramioPlugin::version() const
+    settings.insert( "itemsOnScreen", numberOfItems() );
+
+    return settings;
+}
+
+void PanoramioPlugin::setSettings( const QHash<QString, QVariant> &settings )
+{
+    AbstractDataPlugin::setSettings( settings );
+
+    setNumberOfItems( settings.value( "itemsOnScreen", numberOfImagesPerFetch ).toInt() );
+
+    emit settingsChanged( nameId() );
+}
+
+QString PanoramioPlugin::version() const
 {
     return "0.1";
 }
@@ -65,6 +87,42 @@ QString PanoramioPlugin::copyrightYears() const
 QList<PluginAuthor> PanoramioPlugin::pluginAuthors() const
 {
     return QList<PluginAuthor>() << PluginAuthor( "Bastian Holst", "bastianholst@gmx.de" );
+}
+
+QDialog *PanoramioPlugin::configDialog()
+{
+    if ( !m_configDialog ) {
+        m_configDialog = new QDialog();
+        m_uiConfigWidget = new Ui::ConfigWidget;
+        m_uiConfigWidget->setupUi( m_configDialog );
+        readSettings();
+
+        connect( m_uiConfigWidget->m_buttonBox, SIGNAL(accepted()),
+                SLOT(writeSettings()) );
+        connect( m_uiConfigWidget->m_buttonBox, SIGNAL(rejected()),
+                SLOT(readSettings()) );
+        QPushButton *applyButton = m_uiConfigWidget->m_buttonBox->button( QDialogButtonBox::Apply );
+        connect( applyButton, SIGNAL(clicked()),
+                 this,        SLOT(writeSettings()) );
+    }
+
+    return m_configDialog;
+}
+
+void PanoramioPlugin::readSettings()
+{
+    if ( m_uiConfigWidget ) {
+        m_uiConfigWidget->m_itemsOnScreenSpin->setValue( numberOfItems() );
+    }
+}
+
+void PanoramioPlugin::writeSettings()
+{
+    if ( m_uiConfigWidget ) {
+        setNumberOfItems( m_uiConfigWidget->m_itemsOnScreenSpin->value() );
+    }
+
+    emit settingsChanged( nameId() );
 }
 
 Q_EXPORT_PLUGIN2(PanoramioPlugin, Marble::PanoramioPlugin)

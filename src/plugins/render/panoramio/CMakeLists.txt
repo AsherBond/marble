@@ -12,5 +12,9 @@ set( panoramio_SRCS PanoramioPlugin.cpp
                     PanoramioWidget.cpp
                     jsonparser.cpp )
 
+set( panoramio_UI ConfigWidget.ui )
+qt_wrap_ui( panoramio_SRCS ${panoramio_UI} )
+marble_qt4_automoc( ${panoramio_SRCS} )
+
 marble_add_plugin( Panoramio ${panoramio_SRCS} )
 target_link_libraries( Panoramio ${QT_QTSCRIPT_LIBRARY} )
