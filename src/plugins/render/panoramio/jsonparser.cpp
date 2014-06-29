@@ -11,30 +11,30 @@
 
 #include "jsonparser.h"
 
-jsonParser::jsonParser()
+jsonParser::jsonParser(const QString &content)
     : dataStorage()
 {
   myEngine.setProcessEventsInterval(10);//this lets the gui remain responsive
+
+  QString temp = "var myJSONObject =" + content;
+  myEngine.evaluate(temp);
+  myEngine.evaluate(QString("function count(){ return myJSONObject.count };"));
+  myEngine.evaluate(QString("function height(x){return myJSONObject.photos[x].height};"));
+  myEngine.evaluate(QString("function latitude(x){return myJSONObject.photos[x].latitude};"));
+  myEngine.evaluate(QString("function longitude (x){return myJSONObject.photos[x].longitude};"));
+  myEngine.evaluate(QString("function owner_id(x){return myJSONObject.photos[x].owner_id};"));
+  myEngine.evaluate(QString("function photo_file_url(x){return myJSONObject.photos[x].photo_file_url};"));
+  myEngine.evaluate(QString("function photo_title(x){return myJSONObject.photos[x].photo_title};"));
+  myEngine.evaluate(QString("function photo_id(x){return myJSONObject.photos[x].photo_id};"));
+  myEngine.evaluate(QString("function upload_date(x){return myJSONObject.photos[x].upload_date};"));
 }
 
 jsonParser::~jsonParser()
 {
 }
 
-panoramioDataStructure jsonParser::parseObjectOnPosition(const QString &content , int requiredObjectPosition)
+panoramioDataStructure jsonParser::parseObjectOnPosition(int requiredObjectPosition)
 {
-    QString temp = "var myJSONObject =" + content;
-    myEngine.evaluate(temp);
-    myEngine.evaluate(QString("function count(){ return myJSONObject.count };"));
-    myEngine.evaluate(QString("function height(x){return myJSONObject.photos[x].height};"));
-    myEngine.evaluate(QString("function latitude(x){return myJSONObject.photos[x].latitude};"));
-    myEngine.evaluate(QString("function longitude (x){return myJSONObject.photos[x].longitude};"));
-    myEngine.evaluate(QString("function owner_id(x){return myJSONObject.photos[x].owner_id};"));
-    myEngine.evaluate(QString("function photo_file_url(x){return myJSONObject.photos[x].photo_file_url};"));
-    myEngine.evaluate(QString("function photo_title(x){return myJSONObject.photos[x].photo_title};"));
-    myEngine.evaluate(QString("function photo_id(x){return myJSONObject.photos[x].photo_id};"));
-    myEngine.evaluate(QString("function upload_date(x){return myJSONObject.photos[x].upload_date};"));
-    dataStorage.count = myEngine.evaluate("count();").toInteger();
     myEngine.evaluate(QString("var x="+QString::number(requiredObjectPosition)));
     dataStorage.longitude=myEngine.evaluate(QString("longitude(x)")).toNumber();
     dataStorage.latitude=myEngine.evaluate(QString("latitude(x)")).toNumber();
@@ -85,13 +85,15 @@ panoramioDataStructure jsonParser::parseObjectOnPosition(const QString &content 
     return dataStorage;
 }
 
-QList<panoramioDataStructure> jsonParser::parseAllObjects(const QString &content, int number)
+QList<panoramioDataStructure> jsonParser::parseAllObjects()
 {
+    const int number = myEngine.evaluate("count();").toInteger();
+
     QList <panoramioDataStructure> returnStructure;
-    
+
     for( int i = 0; i < number; i++ ) {
-        returnStructure.append( parseObjectOnPosition( content, i ) );
+        returnStructure.append( parseObjectOnPosition( i ) );
     }
-    
+
     return returnStructure;
 }

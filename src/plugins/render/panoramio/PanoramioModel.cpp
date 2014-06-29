@@ -49,11 +49,9 @@ void PanoramioModel::getAdditionalItems( const GeoDataLatLonAltBox &box, qint32 
 
 void PanoramioModel::parseFile( const QByteArray &file )
 {
-    jsonParser panoramioJsonParser;
-    QList<panoramioDataStructure> list
-        = panoramioJsonParser.parseAllObjects( file,
-                                               numberOfImagesPerFetch );
-    
+    jsonParser parser( file );
+    QList<panoramioDataStructure> list = parser.parseAllObjects();
+
     QList<panoramioDataStructure>::iterator it;
     for ( it = list.begin(); it != list.end(); ++it ) {
         // Setting the meta information of the current image
