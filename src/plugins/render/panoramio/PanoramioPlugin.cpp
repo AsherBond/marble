@@ -17,6 +17,8 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
+#include "MarbleWidget.h"
+
 using namespace Marble;
 
 PanoramioPlugin::PanoramioPlugin( const MarbleModel *marbleModel ) :
@@ -87,6 +89,21 @@ QString PanoramioPlugin::copyrightYears() const
 QList<PluginAuthor> PanoramioPlugin::pluginAuthors() const
 {
     return QList<PluginAuthor>() << PluginAuthor( "Bastian Holst", "bastianholst@gmx.de" );
+}
+
+bool PanoramioPlugin::eventFilter(QObject *object, QEvent *event)
+{
+    if ( isInitialized() ) {
+        Q_ASSERT( dynamic_cast<PanoramioModel *>( model() ) != 0 );
+
+        PanoramioModel *photoPluginModel = static_cast<PanoramioModel *>( model() );
+        MarbleWidget* widget = dynamic_cast<MarbleWidget*>( object );
+        if ( widget ) {
+            photoPluginModel->setMarbleWidget( widget );
+        }
+    }
+
+    return AbstractDataPlugin::eventFilter( object, event );
 }
 
 QDialog *PanoramioPlugin::configDialog()

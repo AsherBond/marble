@@ -56,6 +56,9 @@ class PanoramioPlugin : public AbstractDataPlugin, public DialogConfigurationInt
 
     QDialog *configDialog();
 
+ protected:
+   bool eventFilter( QObject *object, QEvent *event );
+
  private Q_SLOTS:
     void readSettings();
     void writeSettings();
