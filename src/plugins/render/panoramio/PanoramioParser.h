@@ -8,8 +8,8 @@
 // Copyright 2008      Shashan Singh <shashank.personal@gmail.com>
 //
 
-#ifndef JSONPARSER_H
-#define JSONPARSER_H
+#ifndef PANORAMIOPARSER_H
+#define PANORAMIOPARSER_H
 
 #include <QtScript>
 #include <QList>
@@ -42,22 +42,18 @@ struct panoramioDataStructure
     QString owner_url; // Url of the User Uplaoded
 };
 
-class jsonParser 
+class PanoramioParser
 {
 public:
-    jsonParser(const QString &content);
+    PanoramioParser(const QString &content);
 
-    ~jsonParser();
+    ~PanoramioParser();
 
     panoramioDataStructure parseObjectOnPosition(int requiredObjectPosition);   //for parsing single object
 
     QList<panoramioDataStructure> parseAllObjects();   //for parsing a list objects
 
 private:
-    QList <panoramioDataStructure> parsedJsonOutput;
-
-    panoramioDataStructure dataStorage;
-
     QScriptEngine myEngine;
 };
 

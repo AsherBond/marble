@@ -9,8 +9,8 @@ INCLUDE(${QT_USE_FILE})
 
 set( panoramio_SRCS PanoramioPlugin.cpp
                     PanoramioModel.cpp
-                    PanoramioWidget.cpp
-                    jsonparser.cpp )
+                    PanoramioItem.cpp
+                    PanoramioParser.cpp )
 
 set( panoramio_UI ConfigWidget.ui )
 qt_wrap_ui( panoramio_SRCS ${panoramio_UI} )

@@ -9,10 +9,9 @@
 // Copyright 2009      Bastian Holst <bastianholst@gmx.de>
 //
 
-#include "jsonparser.h"
+#include "PanoramioParser.h"
 
-jsonParser::jsonParser(const QString &content)
-    : dataStorage()
+PanoramioParser::PanoramioParser(const QString &content)
 {
   myEngine.setProcessEventsInterval(10);//this lets the gui remain responsive
 
@@ -29,12 +28,14 @@ jsonParser::jsonParser(const QString &content)
   myEngine.evaluate(QString("function upload_date(x){return myJSONObject.photos[x].upload_date};"));
 }
 
-jsonParser::~jsonParser()
+PanoramioParser::~PanoramioParser()
 {
 }
 
-panoramioDataStructure jsonParser::parseObjectOnPosition(int requiredObjectPosition)
+panoramioDataStructure PanoramioParser::parseObjectOnPosition(int requiredObjectPosition)
 {
+    panoramioDataStructure dataStorage;
+
     myEngine.evaluate(QString("var x="+QString::number(requiredObjectPosition)));
     dataStorage.longitude=myEngine.evaluate(QString("longitude(x)")).toNumber();
     dataStorage.latitude=myEngine.evaluate(QString("latitude(x)")).toNumber();
@@ -85,7 +86,7 @@ panoramioDataStructure jsonParser::parseObjectOnPosition(int requiredObjectPosit
     return dataStorage;
 }
 
-QList<panoramioDataStructure> jsonParser::parseAllObjects()
+QList<panoramioDataStructure> PanoramioParser::parseAllObjects()
 {
     const int number = myEngine.evaluate("count();").toInteger();
 

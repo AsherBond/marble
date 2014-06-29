@@ -11,11 +11,11 @@
 
 // Self
 #include "PanoramioModel.h"
-#include "jsonparser.h"
+#include "PanoramioItem.h"
+#include "PanoramioParser.h"
 
 // Marble
 #include "GeoDataLatLonAltBox.h"
-#include "PanoramioWidget.h"
 
 // Qt
 #include <QUrl>
@@ -49,7 +49,7 @@ void PanoramioModel::getAdditionalItems( const GeoDataLatLonAltBox &box, qint32 
 
 void PanoramioModel::parseFile( const QByteArray &file )
 {
-    jsonParser parser( file );
+    PanoramioParser parser( file );
     QList<panoramioDataStructure> list = parser.parseAllObjects();
 
     QList<panoramioDataStructure>::iterator it;
@@ -64,26 +64,24 @@ void PanoramioModel::parseFile( const QByteArray &file )
             continue;
         }
         
-        PanoramioWidget *widget = new PanoramioWidget( this );
-        widget->setTarget( "earth" );
-        widget->setCoordinate( coordinates );
-        widget->setId( QString::number( (*it).photo_id ) );
-        widget->setUploadDate( (*it).upload_date );
+        PanoramioItem *item = new PanoramioItem( this );
+        item->setTarget( "earth" );
+        item->setCoordinate( coordinates );
+        item->setId( QString::number( (*it).photo_id ) );
+        item->setUploadDate( (*it).upload_date );
         
         // We need to download the file from Panoramio if it doesn't exist already
-        if ( !fileExists( widget->id(), standardImageSize ) ) {
+        if ( !fileExists( item->id(), standardImageSize ) ) {
             downloadItem( QUrl( (*it).photo_file_url ),
                                 standardImageSize,
-                                widget );
+                                item );
         }
         else {
             // If the file does exist, we can simply load it to our widget.
-            QString filename = generateFilepath( widget->id(),
-                                                 standardImageSize );
-            widget->addDownloadedFile( filename,
-                                       standardImageSize );
+            const QString filename = generateFilepath( item->id(), standardImageSize );
+            item->addDownloadedFile( filename, standardImageSize );
             
-            addItemToList( widget );
+            addItemToList( item );
         }
     }
 }
